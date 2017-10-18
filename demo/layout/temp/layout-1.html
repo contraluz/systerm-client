@@ -12,7 +12,15 @@
 </head>
 <body>
 	<table id="dg"></table>
-	<div id="dlg" class="easyui-dialog" title="Basic Dialog" data-options="iconCls:'icon-save',closed:true" style="width:500px;height:400px;padding:10px">
+	<div id="dpg" class="easyui-dialog" title="search" data-options="iconCls:'icon-save',closed:true" style="width:300px;height:200px;padding:10px">
+			<div style="margin:20px 0">
+				<input class="easyui-textbox" name="searchBox" id='searchBox' style="width:100%" data-options="required:true">
+			</div>
+			<div style="text-align:center;padding:5px 0">
+				<a href="javascript:void(0)" class="easyui-linkbutton" onclick="sear()" style="width:80px">search</a>
+			</div>
+	</div>
+	<div id="dlg" class="easyui-dialog" title="信息修改" data-options="iconCls:'icon-save',closed:true" style="width:500px;height:400px;padding:10px">
        
 		 <form id="ff" class="easyui-form" method="post" data-options="novalidate:true">
 			 
@@ -20,13 +28,13 @@
                 <input class="easyui-textbox" name="name" style="width:100%" data-options="label:'Name:',required:true">
             </div>
             <div style="margin-bottom:20px">
-                <input class="easyui-textbox" name="password" style="width:100%" data-options="label:'Pwd:',required:true">
+                <input class="easyui-textbox" name="password" style="width:100%" data-options="label:'Pwd:',required:true" validType="Num_psd">
 			</div>
 			<div style="margin-bottom:20px">
-					<input class="easyui-textbox" name="email" style="width:100%" data-options="label:'Email:',required:false">
+					<input class="easyui-textbox" name="email" style="width:100%" data-options="label:'Email:',required:false" validType="Num_email">
 			</div>
 			<div style="margin-bottom:20px">
-					<input class="easyui-textbox" name="age" style="width:100%" data-options="label:'Age:',required:false">
+					<input class="easyui-textbox" name="age" style="width:100%" data-options="label:'Age:',required:false" validType="AgeNum">
 			</div>
 			<div style="margin-bottom:5px">
                 <input class="easyui-textbox" name="_id" style="width:100%" data-options="label:'需替换行ID:',required:false">
@@ -44,7 +52,41 @@
 
 
 	<script type="text/javascript">
-		
+		function sear(){
+			var value=$('#searchBox').val();
+			$('#dg').datagrid('load', {
+				name: value,
+				address: 'ho'
+			});
+			$('#dg').datagrid('reload'); 
+		}
+		$.extend($.fn.validatebox.defaults.rules, {
+			  
+			AgeNum:{
+				validator:function(value,param){
+					var reg = /^\d{1,3}$/g;
+					return reg.test(value);
+				},
+				message:  '请输入正确的年龄！'
+			},
+			Num_psd:{
+				validator:function(value,param){
+					var reg = /^\w{1,16}$/g;
+					return reg.test(value);
+				},
+				message:  '请输入1-16位的数字字母组合！'
+			},
+			Num_email:{
+				validator:function(value,param){
+					var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/ ;
+					return reg.test(value);
+				},
+				message:  '请输入正确的邮箱！'
+			}
+
+
+		});
+
 		function submitForm(){
 			$('#ff').form('submit',{
 				onSubmit:function(){
@@ -95,10 +137,10 @@
 
 
 	 var toolbar = [{
-		text:'添加/修改',
+		text:'添加',
 		iconCls:'icon-add',
 		handler:function(){
-			$('#dlg').dialog('open')
+			$('#dlg').dialog('open').find('input').val('')
 		}
 	},{
 		text:'删除',
@@ -140,12 +182,22 @@
 		text:'搜索',
 		iconCls:'icon-search',
 		handler:function(){
-			
+			$('#dpg').dialog('open')
 		}
 	},'-',{
 		text:'保存',
 		iconCls:'icon-save',
-		handler:function(){alert('saved')}
+		handler:function(){alert('已保存')}
+	},'-',{
+		text:'刷新',
+		iconCls:'icon-reload',
+		handler:function(){
+			$('#dg').datagrid('load', {
+				name: "",
+				address: 'ho'
+			});
+			$("#dg").datagrid("reload");
+		}
 	}];
 
 	$('#dg').datagrid({
@@ -161,27 +213,25 @@
 			{field:'name',title:'账号',width:100,align:'center'},
 			{field:'password',title:'密码',width:100,align:'center'},
 			{field:'email',title:'邮箱',width:200,align:'center'},
-			{field:'age',title:'年龄',width:50,align:'center',formatter: function(value,row,index){
-				if (value < 18) {
-					return '<span style="color:red;">' + value + '</span>';
-                } else {
-                     return value;
-                }
-			}},
+			{field:'age',title:'年龄',width:50,align:'center'},
 			{field:'opt',title:'操作', width:80,align:'center',
 				formatter: function(value,row,index){
-					return "<span style='cursor:pointer' class='new_add' onclick='new_add()'>编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
+					return "<span style='cursor:pointer' class='new_add'>双击编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
 				}
 			}
 		]],
+		
 		onDblClickRow(index,row){
 			editData(row);
 		}
 	});
-	function new_add(){
-		$('#dlg').dialog('open')
-	}
+	//单击编辑，但不能判断那一条
+	// function new_add(index,row){
+	// 	// $('#dlg').dialog('open')
+	// 	editData(row);
+	// }
 	function new_delete(){
+		$(this).parents('tr').addClass('datagrid-row-checked datagrid-row-selected')
 			if(confirm('您确认删除吗？（删除后数据无法恢复！）')){
 				
 
