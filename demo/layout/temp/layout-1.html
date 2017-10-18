@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>用户管理</title>
+	<link rel="stylesheet" type="text/css" href="../../../../themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../demo.css">
+	<script type="text/javascript" src="../../../../jquery.min.js"></script>
+	<script type="text/javascript" src="../../../../jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../../../jquery.serializeObject.js"></script>
+</head>
+<body>
+	<table id="dg"></table>
+	<div id="dlg" class="easyui-dialog" title="Basic Dialog" data-options="iconCls:'icon-save',closed:true" style="width:500px;height:400px;padding:10px">
+       
+		 <form id="ff" class="easyui-form" method="post" data-options="novalidate:true">
+			 
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="name" style="width:100%" data-options="label:'Name:',required:true">
+            </div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="password" style="width:100%" data-options="label:'Pwd:',required:true">
+			</div>
+			<div style="margin-bottom:20px">
+					<input class="easyui-textbox" name="email" style="width:100%" data-options="label:'Email:',required:false">
+			</div>
+			<div style="margin-bottom:20px">
+					<input class="easyui-textbox" name="age" style="width:100%" data-options="label:'Age:',required:false">
+			</div>
+			<div style="margin-bottom:5px">
+                <input class="easyui-textbox" name="_id" style="width:100%" data-options="label:'需替换行ID:',required:false">
+            </div>
+
+            <!-- <input type="text" name="_id" /> -->
+
+        </form>
+        <div style="text-align:center;padding:5px 0">
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">Submit</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+        </div>
+
+    </div>
+
+
+	<script type="text/javascript">
+		
+		function submitForm(){
+			$('#ff').form('submit',{
+				onSubmit:function(){
+					if($(this).form('enableValidation').form('validate')){
+
+						var data = $("#ff").serializeObject();
+						console.log(data)
+						console.log(data._id && data._id.trim().length>0)
+						if(data._id && data._id.trim().length>0){
+							// editMode
+
+							$.ajax({
+								method:'put',
+								url:'http://localhost:3000/users/data/' + data._id,
+								data: data
+							}).done(function(res){
+								$('#dlg').dialog('close')
+								$('#dg').datagrid('reload'); 
+							})
+						}else{
+							// addMode
+							delete data._id;
+							$.ajax({
+								method:'post',
+								url:'http://localhost:3000/users/data',
+								data: data
+							}).done(function(res){
+								$('#dlg').dialog('close')
+								$('#dg').datagrid('reload'); 
+							})
+
+						}
+						
+					}else{
+						$.messager.show({
+							title:'信息提示',
+							msg:'表单验证失败',
+							showType:'show'
+						});
+					}
+
+				}
+			});
+		}
+		function clearForm(){
+			$('#ff').form('clear');
+		}
+
+
+	 var toolbar = [{
+		text:'添加/修改',
+		iconCls:'icon-add',
+		handler:function(){
+			$('#dlg').dialog('open')
+		}
+	},{
+		text:'删除',
+		iconCls:'icon-cut',
+		handler:function(){
+			if(confirm('您确认删除吗？（删除后数据无法恢复！）')){
+				
+
+			var gss = $("#dg").datagrid('getSelections');
+			var ids = [];
+			for(var i=0;i<gss.length;i++){
+				ids.push(gss[i]._id);
+			}
+
+			$.ajax({
+				url:'http://localhost:3000/users/deletes',
+				method:'post',
+				data: {ids: ids.toString()}
+			}).done(function(res){
+				console.log(res.status)
+				if(res.status === 200){
+					$.messager.show({
+							title:'信息提示',
+							msg:'删除数据成功',
+							showType:'show'
+						});
+				}else{
+					$.messager.show({
+							title:'信息提示',
+							msg:'请选择要删除的数据',
+							showType:'show'
+						});
+				}
+				$("#dg").datagrid("reload");
+			})
+			}
+		}
+	},{
+		text:'搜索',
+		iconCls:'icon-search',
+		handler:function(){
+			
+		}
+	},'-',{
+		text:'保存',
+		iconCls:'icon-save',
+		handler:function(){alert('saved')}
+	}];
+
+	$('#dg').datagrid({
+		toolbar:toolbar,
+		pagination:true,
+		fit:true,
+		method:'post',
+		url:'http://localhost:3000/users/list',
+		rownumbers: true,
+		columns:[[
+			   {field:'ck',checkbox:true},
+			{field:'_id',title:'ID',width:200,align:'center' },
+			{field:'name',title:'账号',width:100,align:'center'},
+			{field:'password',title:'密码',width:100,align:'center'},
+			{field:'email',title:'邮箱',width:200,align:'center'},
+			{field:'age',title:'年龄',width:50,align:'center',formatter: function(value,row,index){
+				if (value < 18) {
+					return '<span style="color:red;">' + value + '</span>';
+                } else {
+                     return value;
+                }
+			}},
+			{field:'opt',title:'操作', width:80,align:'center',
+				formatter: function(value,row,index){
+					return "<span style='cursor:pointer' class='new_add' onclick='new_add()'>编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
+				}
+			}
+		]],
+		onDblClickRow(index,row){
+			editData(row);
+		}
+	});
+	function new_add(){
+		$('#dlg').dialog('open')
+	}
+	function new_delete(){
+			if(confirm('您确认删除吗？（删除后数据无法恢复！）')){
+				
+
+			var gss = $("#dg").datagrid('getSelections');
+			var ids = [];
+			for(var i=0;i<gss.length;i++){
+				ids.push(gss[i]._id);
+			}
+
+			$.ajax({
+				url:'http://localhost:3000/users/deletes',
+				method:'post',
+				data: {ids: ids.toString()}
+			}).done(function(res){
+				console.log(res.status)
+				if(res.status === 200){
+					$.messager.show({
+							title:'信息提示',
+							msg:'删除数据成功',
+							showType:'show'
+						});
+				}else{
+					$.messager.show({
+							title:'信息提示',
+							msg:'请选择要删除的数据',
+							showType:'show'
+						});
+				}
+				$("#dg").datagrid("reload");
+			})
+			}
+		}
+	function editData(row){
+		$('#dlg').dialog('open');
+		$('#ff').form('load',row);
+	}
+
+	</script>
+	
+</body>
+</html>
