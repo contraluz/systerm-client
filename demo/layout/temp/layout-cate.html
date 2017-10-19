@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>分类管理</title>
+	<link rel="stylesheet" type="text/css" href="../../../../themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../demo.css">
+	<script type="text/javascript" src="../../../../jquery.min.js"></script>
+	<script type="text/javascript" src="../../../../jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../../../jquery.serializeObject.js"></script>
+
+</head>
+<body>
+	<ul id="tt"></ul>
+
+	<form id="ff" method="post">
+			<div style="margin-bottom:20px">
+					<label>目标路径： <input type="text" name="parentId" id="parentId" style="margin-left: 20px; height: 22px; line-height: 22px; width: 483px;border-radius:5px"/></label>
+				</div>
+            <div style="margin-bottom:20px">
+                <input class="easyui-textbox" name="text" style="width:50%" data-options="label:'分类名称:',required:true">
+            </div>
+          
+        </form>
+        <div style="text-align:left;padding:5px 0">
+        	<a href="javascript:void(0)" class="easyui-linkbutton" onclick="addRootNode()" 
+        	style="width:80px">添加根节点</a>
+
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="addChildNode()" 
+            style="width:80px">添加子节点</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" onclick="removeNodes()" 
+			style="width:80px">删除节点</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearNodes()" 
+            style="width:80px">清除路径</a>
+        </div>
+
+	<script type="text/javascript">
+		$('#tt').tree({
+			method:'get',
+		    url:'http://localhost:3000/cate/list',
+		    onClick(node){
+		    	$("#parentId").val(node._id)
+		    }
+		});
+
+		function addChildNode(){
+            $('#ff').form('submit',{
+                onSubmit:function(){
+                   if( $(this).form('enableValidation').form('validate')){
+                   	var data = $("#ff").serializeObject();
+
+                   	$.ajax({
+                   		url:'http://localhost:3000/cate/data',
+                   		method:'post',
+                   		data: data
+                   	}).done(function(res){
+						$("#tt").tree("reload");
+						$("#parentId").val(" ");
+                   	})
+                   }
+				  
+                }
+            });
+        }
+
+		function addRootNode(){
+            $('#ff').form('submit',{
+                onSubmit:function(){
+                   if( $(this).form('enableValidation').form('validate')){
+                   	var data = $("#ff").serializeObject();
+                   	delete data.parentId;
+
+                   	$.ajax({
+                   		url:'http://localhost:3000/cate/data',
+                   		method:'post',
+                   		data: data
+                   	}).done(function(res){
+						   console.log(res);
+						   $("#tt").tree("reload");
+						   $("#parentId").val(" ");
+                   	})
+					   
+                   }
+                }
+            });
+        }
+
+       function removeNodes(){
+        	 var node = $('#tt').tree('getSelected');	// get checked nodes
+        	 $.ajax({
+        	 	url:'http://localhost:3000/cate/data/' + node._id,
+        	 	method:'delete'
+        	 }).done(function(res){
+        	 	console.log(res);
+				 $("#tt").tree("reload");
+				 $("#parentId").val(" ");
+        	 })
+		}
+		
+		function clearNodes(){
+			$("#parentId").val(" ");
+			// $('.easyui-textbox').val(' ')
+		}
+	</script>
+	
+</body>
+</html>
