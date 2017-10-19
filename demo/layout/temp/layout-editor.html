@@ -9,16 +9,24 @@
 	<script type="text/javascript" src="../../../../jquery.min.js"></script>
 	<script type="text/javascript" src="../../../../jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../../../../jquery.serializeObject.js"></script>
-    <script type="text/javascript" src="../xheditor-1.2.2/xheditor-1.2.2.min.js"></script>
-    <script type="text/javascript" src="../xheditor-1.2.2/xheditor_lang/zh-cn.js"></script>
-    <style>
-        html,body{width:100%}
-        textarea{width: 500px;height:300px}
-    </style>
+    
+    
 </head>
 <body>
-    <h1>今宵酒醒何处</h1>
-    <h2 id="parentId"></h2>
-    <textarea name="content" class="xheditor">test</textarea>
+    <style>
+        /* html,body{width:100%;height:100%} */
+        textarea{width:1200px;height:300px}
+    </style>
+    
+    <!-- <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitCommit()" 
+    style="width:80px;float:right">保存修改</a> -->
+    <textarea name="content" class="xheditor" id="xheditor">人这辈子,最害怕突然把某一首歌听懂了</textarea>
+    <script type="text/javascript" src="../xheditor-1.2.2/xheditor-1.2.2.min.js"></script>
+    <script type="text/javascript" src="../xheditor-1.2.2/xheditor_lang/zh-cn.js"></script>
+    <input type="button" value="保存">
+    <script>
+        // var parentId=$("#parentId").text()
+        // $('textarea').text(parentId)
+    </script>
 </body>
 </html>

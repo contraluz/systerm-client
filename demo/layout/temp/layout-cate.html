@@ -87,7 +87,8 @@
         }
 
        function removeNodes(){
-        	 var node = $('#tt').tree('getSelected');	// get checked nodes
+        	 if(confirm("Are you sure to delete?")){
+				var node = $('#tt').tree('getSelected');	// get checked nodes
         	 $.ajax({
         	 	url:'http://localhost:3000/cate/data/' + node._id,
         	 	method:'delete'
@@ -96,6 +97,7 @@
 				 $("#tt").tree("reload");
 				 $("#parentId").val(" ");
         	 })
+			 }
 		}
 		
 		function clearNodes(){

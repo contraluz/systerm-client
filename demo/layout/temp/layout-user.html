@@ -216,20 +216,19 @@
 			{field:'age',title:'年龄',width:50,align:'center'},
 			{field:'opt',title:'操作', width:80,align:'center',
 				formatter: function(value,row,index){
-					return "<span style='cursor:pointer' class='new_add'>双击编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
+					return "<span style='cursor:pointer' class='new_add' onclick='new_add()'>编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
 				}
 			}
 		]],
-		
 		onDblClickRow(index,row){
 			editData(row);
 		}
 	});
 	//单击编辑，但不能判断那一条
-	// function new_add(index,row){
-	// 	// $('#dlg').dialog('open')
-	// 	editData(row);
-	// }
+	function new_add(index,row){
+		// $('#dlg').dialog('open')
+		editData(row);
+	}
 	function new_delete(){
 		$(this).parents('tr').addClass('datagrid-row-checked datagrid-row-selected')
 			if(confirm('您确认删除吗？（删除后数据无法恢复！）')){
