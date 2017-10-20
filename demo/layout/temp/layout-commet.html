@@ -11,6 +11,20 @@
 	<script type="text/javascript" src="../../../../jquery.serializeObject.js"></script>
 </head>
 <body>
+	<div class="easyui-layout" data-options="fit:true">
+
+		<div data-options="region:'north'" style="height:50px;line-height:40px;font-size:20px;text-align:center;font-weight:800">评论管理系统</div>
+		<div data-options="region:'west',split:true" title="目录" style="width:150px;">
+			<div class="easyui-accordion" data-options="fit:true">
+				<div title="新闻目录" data-options="iconCls:'icon-ok'" style="overflow:auto;padding:10px;">
+					<ul class="easyui-tree wu-side-tree" id='tt'>
+
+					</ul>
+				</div>
+			</div>
+
+		</div>
+
 		<div data-options="region:'center',title:'Main Title',iconCls:'icon-ok'">
 		
 				<!-- <p id="parentId" style="border-radius:8px;height:20px;text-align:center"></p>  -->
@@ -54,7 +68,51 @@
 				<!-- <div title="详情" data-options="href:'layout-editor.html',closable:false,iconCls:'icon-tip',cls:'pd3'"></div> -->		
 			</div>
 		</div>
+	</div>
 		<script type="text/javascript">
+		$('#tt').tree({
+			method: 'get',
+			url: 'http://localhost:3000/cate/list',
+			onClick(node) {
+
+				$("#parentId").toggle().text(node.content)
+			}
+		});
+
+		//add editor
+		function addTab(title, href, iconCls, iframe){
+				var tabPanel = parent.$('#wu-tabs');
+				if(!tabPanel.tabs('exists',title)){
+					var content = '<iframe scrolling="auto" frameborder="0"  src="'+ href +'" style="width:100%;height:100%;"></iframe>';
+					// iframe模式
+					if(iframe){
+						tabPanel.tabs('add',{
+							title:title,
+							content:content,
+							iconCls:iconCls,
+							fit:true,
+							cls:'pd3',
+							closable:true
+						});
+					}
+					else{
+						tabPanel.tabs('add',{
+							title:title,
+							href:href,
+							iconCls:iconCls,
+							fit:true,
+							cls:'pd3',
+							closable:true
+						});
+					}
+				}
+				else
+				{
+					tabPanel.tabs('select',title);
+				}
+			}
+
+			//=========
 			function sear(){
 				var value=$('#searchBox').val();
 				$('#dg').datagrid('load', {
@@ -215,7 +273,7 @@
 				},
 				{field:'opt',title:'操作', width:150,align:'center',
 					formatter: function(value,row,index){
-						return "<span style='cursor:pointer' class='new_comment' onclick='new_comment()'>评论</span> <span style='cursor:pointer' class='new_add' onclick='new_add()'>编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
+						return "<span style='cursor:pointer' class='new_comment' onclick='addTab()'>评论</span> <span style='cursor:pointer' class='new_add' onclick='new_add()'>编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
 					}
 				},
 				{field:'words',title:'我的评论',width:300,align:'center'}
@@ -226,9 +284,9 @@
 			}
 			
 		});
-		function new_comment(){
-			console.log("new_comment")
-		}
+		// function new_comment(){
+		// 	console.log("new_comment")
+		// }
 		function new_add(index,row){
 		// $('#dlg').dialog('open')
 		editData(row);
