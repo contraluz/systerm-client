@@ -48,7 +48,7 @@
 			
 				</div>
 				<div id="wu-tabs" class="easyui-tabs" data-options="border:false,fit:true">
-					<div title="首页" data-options="href:'layout-editor.html',closable:false,iconCls:'icon-tip',cls:'pd3'"></div>				
+					<div title="编辑" data-options="href:'layout-editor.html',closable:false,iconCls:'icon-tip',cls:'pd3'"></div>				
 				</div>
 
 				<!-- <div title="详情" data-options="href:'layout-editor.html',closable:false,iconCls:'icon-tip',cls:'pd3'"></div> -->		
@@ -208,7 +208,7 @@
 				{field:'comment',title:'评论数',width:100,align:'center',
 				formatter: function(value,row,index){
 					if(value>=100000){
-							return "<span style='color:red'>"+value+"</span>"
+							return "<span style='color:red'>"+value+"(热)</span>"
 					}
 					return "<span>"+value+"</span>"
 					}
@@ -271,6 +271,6 @@
 			$('#ff').form('load',row);
 		}
 	
-		</script>
+	</script>
 </body>
 </html>
