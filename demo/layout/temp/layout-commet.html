@@ -17,12 +17,12 @@
 						
 						<table id="dg"></table>
 						<div id="dpg" class="easyui-dialog" title="search" data-options="iconCls:'icon-save',closed:true" style="width:300px;height:200px;padding:10px">
-								<div style="margin:20px 0">
-									<input class="easyui-textbox" name="searchBox" id='searchBox' style="width:100%" data-options="required:true">
-								</div>
-								<div style="text-align:center;padding:5px 0">
-									<a href="javascript:void(0)" class="easyui-linkbutton" onclick="sear()" style="width:80px">search</a>
-								</div>
+							<div style="margin:20px 0">
+								<input class="easyui-textbox" name="searchBox" id='searchBox' style="width:100%" data-options="required:true">
+							</div>
+							<div style="text-align:center;padding:5px 0">
+								<a href="javascript:void(0)" class="easyui-linkbutton" onclick="sear()" style="width:80px">search</a>
+							</div>
 								
 						</div>
 						<div id="dlg" class="easyui-dialog" title="信息修改" data-options="iconCls:'icon-save',closed:true" style="width:500px;height:300px;padding:10px">
@@ -36,7 +36,7 @@
 									<input class="easyui-textbox" name="comment" style="width:100%" data-options="label:'comment:',required:true" validType="onlyNum">
 								</div>
 								<div style="margin-bottom:20px">
-										<input class="easyui-textbox" name="words" style="width:100%" data-options="label:'评论:'">
+										<input class="easyui-textbox" name="words" style="width:100%" data-options="label:'评论:',required:false">
 									</div>
 								<div style="margin-bottom:5px">
 										<input class="easyui-textbox" name="_id" style="width:100%" data-options="label:'需替换行ID:',required:false">
@@ -78,7 +78,7 @@
 						if($(this).form('enableValidation').form('validate')){
 	
 							var data = $("#ff").serializeObject();
-							console.log(1)
+							console.log(data)
 							console.log(data._id)
 							console.log(data._id && data._id.trim().length>0)
 							if(data._id && data._id.trim().length>0){
@@ -216,7 +216,7 @@
 					return "<span>"+value+"</span>"
 					}
 				},
-				{field:'opt',title:'操作', width:180,align:'center',
+				{field:'opt',title:'操作', width:150,align:'center',
 					formatter: function(value,row,index){
 						return "<span style='cursor:pointer' class='new_comment' onclick='new_comment()'>评论</span> <span style='cursor:pointer' class='new_add' onclick='new_add()'>编辑</span> <span style='cursor:pointer' class='new_delete' onclick='new_delete()'>删除</span>"
 					}
@@ -240,7 +240,6 @@
 			$(this).parents('tr').addClass('datagrid-row-checked datagrid-row-selected')
 				if(confirm('您确认删除吗？（删除后数据无法恢复！）')){
 					
-	
 				var gss = $("#dg").datagrid('getSelections');
 				var ids = [];
 				for(var i=0;i<gss.length;i++){
